@@ -12,6 +12,8 @@ public class Main {
 
         Engine engine = new Engine(entityManager);
 
+        engine.run();
+
 
 
 
