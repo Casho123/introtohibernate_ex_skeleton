@@ -1,5 +1,6 @@
 import entities.Address;
 import entities.Employee;
+import entities.Town;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -52,6 +53,9 @@ public class Engine implements Runnable {
                 case 10:
                     exerciseTen();
                     break;
+                case 13:
+                    exerciseThirteen();
+                    break;
             }
 
         } catch (IOException e) {
@@ -60,16 +64,52 @@ public class Engine implements Runnable {
 
     }
 
+    private void exerciseThirteen() throws IOException {
+        System.out.println("Enter town name to delete:");
+        String townName = bufferedReader.readLine();
+        Town town = entityManager.createQuery("SELECT t FROM Town t WHERE t.name = :t_name", Town.class)
+                .setParameter("t_name", townName)
+                .getSingleResult();
+
+
+        int affectedRows = removeTownById(town.getId());
+
+        entityManager.getTransaction().begin();
+        entityManager.remove(town);
+        entityManager.getTransaction().commit();
+
+
+        System.out.println(affectedRows == 1 ? String.format("1 address in %s removed", townName)
+                : String.format("%d addresses in %s removed", affectedRows, townName));
+
+
+    }
+
+    private int removeTownById(Integer id) {
+        List<Address> addresses = entityManager.createQuery("SELECT a FROM Address a WHERE a.town.id = :p_id", Address.class)
+                .setParameter("p_id", id)
+                .getResultList();
+
+        entityManager.getTransaction().begin();
+
+        addresses.forEach(entityManager::remove);
+
+        entityManager.getTransaction().commit();
+        return addresses.size();
+    }
+
+
     private void exerciseTen() {
 
-        entityManager.getTransaction().begin();;
+        entityManager.getTransaction().begin();
+        ;
 
-       int affectedRows =  entityManager.createQuery("UPDATE Employee e SET e.salary = e.salary * 1.2 WHERE e.department.id IN :ids")
-               .setParameter("ids", Set.of(1,2,4,11))
+        int affectedRows = entityManager.createQuery("UPDATE Employee e SET e.salary = e.salary * 1.2 WHERE e.department.id IN :ids")
+                .setParameter("ids", Set.of(1, 2, 4, 11))
                 .executeUpdate();
         System.out.println(affectedRows);
 
-       entityManager.getTransaction().commit();
+        entityManager.getTransaction().commit();
 
     }
 
