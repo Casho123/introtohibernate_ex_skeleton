@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Engine implements Runnable {
@@ -45,7 +46,12 @@ public class Engine implements Runnable {
                 case 6:
                     exerciseSix();
                     break;
-                case 7: exerciseSeven();break;
+                case 7:
+                    exerciseSeven();
+                    break;
+                case 10:
+                    exerciseTen();
+                    break;
             }
 
         } catch (IOException e) {
@@ -54,18 +60,30 @@ public class Engine implements Runnable {
 
     }
 
+    private void exerciseTen() {
+
+        entityManager.getTransaction().begin();;
+
+       int affectedRows =  entityManager.createQuery("UPDATE Employee e SET e.salary = e.salary * 1.2 WHERE e.department.id IN :ids")
+               .setParameter("ids", Set.of(1,2,4,11))
+                .executeUpdate();
+        System.out.println(affectedRows);
+
+       entityManager.getTransaction().commit();
+
+    }
+
     private void exerciseSeven() {
         List<Address> addresses = entityManager.createQuery("SELECT a FROM Address a ORDER by a.employees.size DESC", Address.class)
                 .setMaxResults(10)
                 .getResultList();
 
-        addresses.forEach( address -> {
+        addresses.forEach(address -> {
             System.out.printf("%s , %s - %d employees\n",
                     address.getText(),
                     address.getTown() == null ? "Unknown" : address.getTown().getName(),
                     address.getEmployees().size());
         });
-
 
 
     }
