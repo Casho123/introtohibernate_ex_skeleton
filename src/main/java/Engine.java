@@ -25,6 +25,9 @@ public class Engine implements Runnable {
                 case 2:
                     exerciseTwo();
                     break;
+                case 3:
+                    exerciseThree();
+                    break;
             }
 
         } catch (IOException e) {
@@ -33,11 +36,22 @@ public class Engine implements Runnable {
 
     }
 
+    private void exerciseThree() throws IOException {
+        System.out.println("Enter full employee name:");
+        String[] fullName = bufferedReader.readLine().split("\\s+");
+        String firstName = fullName[0];
+        String lastName = fullName[1];
+        System.out.println();
+
+
+    }
+
     private void exerciseTwo() {
         entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("UPDATE Town t SET t.name = upper(t.name) WHERE length(t.name) >= 5");
         int affectedRows = query.executeUpdate();
         System.out.println("Count of affected rows is: " + affectedRows);
-        entityManager.getTransaction().commit();;
+        entityManager.getTransaction().commit();
+        ;
     }
 }
