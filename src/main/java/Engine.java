@@ -6,6 +6,8 @@ import javax.persistence.Query;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class Engine implements Runnable {
 
@@ -31,12 +33,26 @@ public class Engine implements Runnable {
                 case 3:
                     exerciseThree();
                     break;
+                case 4:
+                    exerciseFour();
+                    break;
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void exerciseFour() {
+        System.out.println("All employees with a salary over 50000");
+        List<Employee> employees = entityManager.createQuery("SELECT e FROM Employee e WHERE e.salary >= :min_salary", Employee.class)
+                .setParameter("min_salary", BigDecimal.valueOf(50000L))
+                .getResultList();
+        for (Employee employee : employees) {
+            System.out.println(employee.getFirstName());
+
+        }
     }
 
     private void exerciseThree() throws IOException {
