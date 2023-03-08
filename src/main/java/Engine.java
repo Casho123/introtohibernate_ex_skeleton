@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Engine implements Runnable {
 
@@ -36,6 +38,9 @@ public class Engine implements Runnable {
                 case 4:
                     exerciseFour();
                     break;
+                case 5:
+                    exerciseFive();
+                    break;
             }
 
         } catch (IOException e) {
@@ -44,8 +49,22 @@ public class Engine implements Runnable {
 
     }
 
+    private void exerciseFive() {
+        System.out.println("Shows all employees from the Research and Development department:");
+
+        entityManager.createQuery("SELECT e FROM Employee e WHERE e.department.name = :d_name ORDER by e.salary, e.id", Employee.class)
+                .setParameter("d_name", "Research and Development")
+                .getResultStream()
+                .forEach(employee -> System.out.printf("%s %s from %s - $%.2f\n",
+                        employee.getFirstName(), employee.getLastName(), employee.getDepartment().getName(), employee.getSalary()));
+
+
+    }
+
+
+
     private void exerciseFour() {
-        System.out.println("All employees with a salary over 50000");
+        System.out.println("All employees with a salary over 50000:");
         List<Employee> employees = entityManager.createQuery("SELECT e FROM Employee e WHERE e.salary >= :min_salary", Employee.class)
                 .setParameter("min_salary", BigDecimal.valueOf(50000L))
                 .getResultList();
