@@ -1,3 +1,4 @@
+import entities.Address;
 import entities.Employee;
 
 import javax.persistence.EntityManager;
@@ -41,12 +42,59 @@ public class Engine implements Runnable {
                 case 5:
                     exerciseFive();
                     break;
+                case 6:
+                    exerciseSix();
+                    break;
+                case 7: exerciseSeven();break;
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void exerciseSeven() {
+        List<Address> addresses = entityManager.createQuery("SELECT a FROM Address a ORDER by a.employees.size DESC", Address.class)
+                .setMaxResults(10)
+                .getResultList();
+
+        addresses.forEach( address -> {
+            System.out.printf("%s , %s - %d employees\n",
+                    address.getText(),
+                    address.getTown() == null ? "Unknown" : address.getTown().getName(),
+                    address.getEmployees().size());
+        });
+
+
+
+    }
+
+    private void exerciseSix() throws IOException {
+        System.out.println("Enter employee last name:");
+        String lastName = bufferedReader.readLine();
+
+        Employee employee = entityManager.createQuery("SELECT e FROM Employee e WHERE e.lastName = :l_name", Employee.class)
+                .setParameter("l_name", lastName)
+                .getSingleResult();
+
+        Address address = createAddress("Vitoshka 15");
+
+        entityManager.getTransaction().begin();
+        employee.setAddress(address);
+        entityManager.getTransaction().commit();
+
+    }
+
+    private Address createAddress(String addressText) {
+        Address address = new Address();
+        address.setText(addressText);
+
+        entityManager.getTransaction().begin();
+        entityManager.persist(address);
+        entityManager.getTransaction().commit();
+
+        return address;
     }
 
     private void exerciseFive() {
@@ -60,7 +108,6 @@ public class Engine implements Runnable {
 
 
     }
-
 
 
     private void exerciseFour() {
