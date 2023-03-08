@@ -1,4 +1,7 @@
+import entities.Employee;
+
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +44,14 @@ public class Engine implements Runnable {
         String[] fullName = bufferedReader.readLine().split("\\s+");
         String firstName = fullName[0];
         String lastName = fullName[1];
-        System.out.println();
+
+
+        Long result = entityManager.createQuery("SELECT count(e) FROM Employee e WHERE e.firstName = :f_name AND e.lastName = :l_name", Long.class)
+                .setParameter("f_name", firstName)
+                .setParameter("l_name", lastName)
+                .getSingleResult();
+
+        System.out.println(result == 0 ? "NO" : "YES");
 
 
     }
